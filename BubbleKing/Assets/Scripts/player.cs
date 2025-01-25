@@ -11,6 +11,8 @@ public class player : MonoBehaviour
     public bool isImpazzendo = false;
     private float countImpazzendoTime = 0f;
     public float maxImpazzendoTime = 2f;
+    public float shakeMagnitude = 0.5f;
+    public float shakeDuration = 0.5f;
     
     public float suckForce = 20;
     public float blowForce = 20;
@@ -28,6 +30,17 @@ public class player : MonoBehaviour
     public float blowSizeChange = 0.001f;
     public float suckSizeChange = 0.005f;
     
+    public CameraScript cam;
+    
+    public GameManager gm;
+
+    public Sprite idle;
+    public Sprite blow;
+    public Sprite suck;
+    public Sprite impazzito;
+    
+    public SpriteRenderer face;
+    
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -43,7 +56,8 @@ public class player : MonoBehaviour
         {
             PlayerInput();
 
-            RotateToMouse(); 
+            RotateToMouse();
+            
         }else if(isImpazzendo)
         {
             HandleImpazzito();
@@ -59,10 +73,12 @@ public class player : MonoBehaviour
         }
         else
         {
+            face.sprite = idle;
             rb2d.angularVelocity = 0.0f;
             canPlayerMove = true; 
             isImpazzendo = false;
             countImpazzendoTime = 0f;
+            gameObject.layer = LayerMask.NameToLayer("Player");
         }
     }
 
@@ -81,6 +97,7 @@ public class player : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
+            face.sprite = suck;
             isLeftMouseDown = true;
             currentMousePos= Camera.main.ScreenToWorldPoint(Input.mousePosition);
             currentMousePos.z=transform.position.z;
@@ -90,11 +107,17 @@ public class player : MonoBehaviour
 
         if (Input.GetMouseButton(1))
         {
+            face.sprite = blow;
             isRightMouseDown = true;
             currentMousePos= Camera.main.ScreenToWorldPoint(Input.mousePosition);
             currentMousePos.z=transform.position.z;
         }else {
             isRightMouseDown = false;
+        }
+
+        if (!(Input.GetMouseButton(0) || Input.GetMouseButton(1)))
+        {
+            face.sprite = idle;
         }
     }
 
@@ -125,12 +148,30 @@ public class player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+        
         Debug.Log("CollisionEnter");
+        face.sprite = impazzito;
         canPlayerMove = false;
         isImpazzendo = true;
         isLeftMouseDown = false;
         isRightMouseDown = false;
         rb2d.angularVelocity = dropTorqueForce;
         rb2d.AddForce(new Vector2(0.0f, -dropForce), ForceMode2D.Impulse);
+        gameObject.layer = LayerMask.NameToLayer("ImpazzitoPlayer");
+        cam.TriggerShake(shakeDuration, shakeMagnitude);
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            OnWinCondition();
+        }
+    }
+
+    private void OnWinCondition()
+    {
+        gm.PlayerWin();
     }
 }
