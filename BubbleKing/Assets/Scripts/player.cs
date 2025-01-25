@@ -43,12 +43,15 @@ public class player : MonoBehaviour
     public SpriteRenderer face;
     public ParticleSystem blowParticle;
     public ParticleSystem suckParticle;
+    public ParticleSystem impazzendoParticle;
 
     public ParticleSystem.MainModule blowParticleMainModule;
     public ParticleSystem.MainModule suckParticleMainModule;
+    public ParticleSystem.MainModule impazzendoParticleMainModule;
     
-    
-    
+    public GameObject bubbleSprite;
+    public float bubbleDeformationForce = 20f;
+    public float bubbleDeforationSpeed = 20f;
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -56,6 +59,7 @@ public class player : MonoBehaviour
     {
         blowParticleMainModule = blowParticle.main;
         suckParticleMainModule = suckParticle.main;
+        impazzendoParticleMainModule = impazzendoParticle.main;
     }
 
     // Update is called once per frame
@@ -154,21 +158,38 @@ public class player : MonoBehaviour
             suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
                 suckParticleMainModule.startSize.constantMin + suckSizeChange,
                 suckParticleMainModule.startSize.constantMax + suckSizeChange);
-        }
+            impazzendoParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                impazzendoParticleMainModule.startSize.constantMin + suckSizeChange,
+                impazzendoParticleMainModule.startSize.constantMax + suckSizeChange);
 
-        if (isRightMouseDown)
+            float scaleChangeX = Mathf.Sin(Time.time * bubbleDeforationSpeed) * bubbleDeformationForce;
+            float scaleChangeY = Mathf.Sin(Time.time * bubbleDeforationSpeed + Mathf.PI / 2) * bubbleDeformationForce;
+            bubbleSprite.transform.localScale +=
+                new Vector3(suckSizeChange + scaleChangeX, suckSizeChange + scaleChangeY, suckSizeChange);
+
+        } else if (isRightMouseDown)
         {
             rb2d.AddRelativeForce(new Vector2(-blowForce, 0.0f));
             
             transform.localScale-= new Vector3(blowSizeChange, blowSizeChange, blowSizeChange);
             
             blowParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
-                blowParticleMainModule.startSize.constantMin - suckSizeChange,
-                blowParticleMainModule.startSize.constantMax - suckSizeChange);
+                blowParticleMainModule.startSize.constantMin - blowSizeChange,
+                blowParticleMainModule.startSize.constantMax - blowSizeChange);
             suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
-                suckParticleMainModule.startSize.constantMin - suckSizeChange,
-                suckParticleMainModule.startSize.constantMax - suckSizeChange);
-            
+                suckParticleMainModule.startSize.constantMin - blowSizeChange,
+                suckParticleMainModule.startSize.constantMax - blowSizeChange);
+            impazzendoParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                impazzendoParticleMainModule.startSize.constantMin - blowSizeChange,
+                impazzendoParticleMainModule.startSize.constantMax - blowSizeChange);
+            float scaleChangeX = Mathf.Sin(Time.time * bubbleDeforationSpeed) * bubbleDeformationForce;
+            float scaleChangeY = Mathf.Sin(Time.time * bubbleDeforationSpeed + Mathf.PI / 2.0f) * bubbleDeformationForce;
+            bubbleSprite.transform.localScale -=
+                new Vector3(blowSizeChange + scaleChangeX, blowSizeChange + scaleChangeY, blowSizeChange);
+        }
+        else
+        {
+            bubbleSprite.transform.localScale = transform.localScale;
         }
 
         if (isImpazzendo)
@@ -182,11 +203,14 @@ public class player : MonoBehaviour
                     transform.localScale -= new Vector3(blowSizeChange, blowSizeChange, blowSizeChange);
 
                     blowParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
-                        blowParticleMainModule.startSize.constantMin - suckSizeChange,
-                        blowParticleMainModule.startSize.constantMax - suckSizeChange);
+                        blowParticleMainModule.startSize.constantMin - blowSizeChange,
+                        blowParticleMainModule.startSize.constantMax - blowSizeChange);
                     suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
-                        suckParticleMainModule.startSize.constantMin - suckSizeChange,
-                        suckParticleMainModule.startSize.constantMax - suckSizeChange);
+                        suckParticleMainModule.startSize.constantMin - blowSizeChange,
+                        suckParticleMainModule.startSize.constantMax - blowSizeChange);
+                    impazzendoParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                        impazzendoParticleMainModule.startSize.constantMin - blowSizeChange,
+                        impazzendoParticleMainModule.startSize.constantMax - blowSizeChange);
                 }
             }
         }
@@ -208,6 +232,7 @@ public class player : MonoBehaviour
             if (!blowParticle.isEmitting)
             {
                 blowParticle.Play();
+                impazzendoParticle.Play();
             }
             rb2d.angularVelocity = dropTorqueForce;
             rb2d.AddForce(new Vector2(0.0f, -dropForce), ForceMode2D.Impulse);
