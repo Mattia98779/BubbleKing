@@ -43,13 +43,19 @@ public class player : MonoBehaviour
     public SpriteRenderer face;
     public ParticleSystem blowParticle;
     public ParticleSystem suckParticle;
+
+    public ParticleSystem.MainModule blowParticleMainModule;
+    public ParticleSystem.MainModule suckParticleMainModule;
+    
+    
     
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-      
+        blowParticleMainModule = blowParticle.main;
+        suckParticleMainModule = suckParticle.main;
     }
 
     // Update is called once per frame
@@ -72,7 +78,8 @@ public class player : MonoBehaviour
     {
         if (countImpazzendoTime < maxImpazzendoTime)
         {
-            countImpazzendoTime += Time.deltaTime;  
+            countImpazzendoTime += Time.deltaTime;
+            
         }
         else
         {
@@ -139,13 +146,29 @@ public class player : MonoBehaviour
         if (isLeftMouseDown)
         {
             rb2d.AddRelativeForce(new Vector2(suckForce, 0.0f));
-            transform.localScale+= new Vector3(suckSizeChange, suckSizeChange, suckSizeChange);
+            transform.localScale += new Vector3(suckSizeChange, suckSizeChange, suckSizeChange);
+            
+            blowParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                blowParticleMainModule.startSize.constantMin + suckSizeChange,
+                blowParticleMainModule.startSize.constantMax + suckSizeChange);
+            suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                suckParticleMainModule.startSize.constantMin + suckSizeChange,
+                suckParticleMainModule.startSize.constantMax + suckSizeChange);
         }
-        
+
         if (isRightMouseDown)
         {
             rb2d.AddRelativeForce(new Vector2(-blowForce, 0.0f));
+            
             transform.localScale-= new Vector3(blowSizeChange, blowSizeChange, blowSizeChange);
+            
+            blowParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                blowParticleMainModule.startSize.constantMin - suckSizeChange,
+                blowParticleMainModule.startSize.constantMax - suckSizeChange);
+            suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                suckParticleMainModule.startSize.constantMin - suckSizeChange,
+                suckParticleMainModule.startSize.constantMax - suckSizeChange);
+            
         }
 
         if (isImpazzendo)
@@ -153,6 +176,18 @@ public class player : MonoBehaviour
             if (countImpazzendoTime < maxImpazzendoTime)
             {
                 rb2d.AddRelativeForce(new Vector2(-dropBlowForce, 0.0f));
+
+                if (transform.localScale.x > minSize)
+                {
+                    transform.localScale -= new Vector3(blowSizeChange, blowSizeChange, blowSizeChange);
+
+                    blowParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                        blowParticleMainModule.startSize.constantMin - suckSizeChange,
+                        blowParticleMainModule.startSize.constantMax - suckSizeChange);
+                    suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                        suckParticleMainModule.startSize.constantMin - suckSizeChange,
+                        suckParticleMainModule.startSize.constantMax - suckSizeChange);
+                }
             }
         }
 
@@ -161,18 +196,25 @@ public class player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        
-        Debug.Log("CollisionEnter");
-        face.sprite = impazzito;
-        canPlayerMove = false;
-        isImpazzendo = true;
-        isLeftMouseDown = false;
-        isRightMouseDown = false;
-        rb2d.angularVelocity = dropTorqueForce;
-        rb2d.AddForce(new Vector2(0.0f, -dropForce), ForceMode2D.Impulse);
-        gameObject.layer = LayerMask.NameToLayer("ImpazzitoPlayer");
-        cam.TriggerShake(shakeDuration, shakeMagnitude);
-        
+        if (!isImpazzendo)
+        {
+            Debug.Log("CollisionEnter");
+            face.sprite = impazzito;
+            canPlayerMove = false;
+            isImpazzendo = true;
+            isLeftMouseDown = false;
+            isRightMouseDown = false;
+            suckParticle.Stop();
+            if (!blowParticle.isEmitting)
+            {
+                blowParticle.Play();
+            }
+            rb2d.angularVelocity = dropTorqueForce;
+            rb2d.AddForce(new Vector2(0.0f, -dropForce), ForceMode2D.Impulse);
+            gameObject.layer = LayerMask.NameToLayer("ImpazzitoPlayer");
+            cam.TriggerShake(shakeDuration, shakeMagnitude);
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
