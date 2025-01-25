@@ -21,6 +21,7 @@ public class player : MonoBehaviour
     public float dropTorqueForce = 20f;
     public float dropForce = 20f;
     public float dropBlowForce = 20f;
+    public float minSize = 0.3f;
     
     public Vector3 currentMousePos = Vector3.zero;
     
@@ -40,13 +41,15 @@ public class player : MonoBehaviour
     public Sprite impazzito;
     
     public SpriteRenderer face;
+    public ParticleSystem blowParticle;
+    public ParticleSystem suckParticle;
     
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+      
     }
 
     // Update is called once per frame
@@ -101,21 +104,31 @@ public class player : MonoBehaviour
             isLeftMouseDown = true;
             currentMousePos= Camera.main.ScreenToWorldPoint(Input.mousePosition);
             currentMousePos.z=transform.position.z;
+            if (!suckParticle.isEmitting)
+            {
+                suckParticle.Play();
+            }
         }else {
             isLeftMouseDown = false;
+            suckParticle.Stop();
         }
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) && transform.localScale.x > minSize)
         {
             face.sprite = blow;
             isRightMouseDown = true;
             currentMousePos= Camera.main.ScreenToWorldPoint(Input.mousePosition);
             currentMousePos.z=transform.position.z;
+            if (!blowParticle.isEmitting)
+            {
+                blowParticle.Play();
+            }
         }else {
             isRightMouseDown = false;
+            blowParticle.Stop();
         }
 
-        if (!(Input.GetMouseButton(0) || Input.GetMouseButton(1)))
+        if (!(Input.GetMouseButton(0) || (Input.GetMouseButton(1) && transform.localScale.x > minSize)))
         {
             face.sprite = idle;
         }
