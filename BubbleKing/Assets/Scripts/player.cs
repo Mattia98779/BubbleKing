@@ -53,6 +53,8 @@ public class player : MonoBehaviour
     public GameObject bubbleSprite;
     public float bubbleDeformationForce = 20f;
     public float bubbleDeforationSpeed = 20f;
+    
+    public SpriteRenderer crownSprite;
 
     public GameObject startingPoint;
     
@@ -224,6 +226,8 @@ public class player : MonoBehaviour
         }
         else if (gm.isEndingAnimationPlaying)
         {
+            face.sprite = impazzito;
+            crownSprite.enabled = true;
             rb2d.velocity = new Vector2(0, -endingDropVelocity);
             rb2d.angularVelocity = endingAngularVelocity;
             if (transform.localScale.x > minSize)
@@ -239,6 +243,7 @@ public class player : MonoBehaviour
                 impazzendoParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
                     impazzendoParticleMainModule.startSize.constantMin - blowSizeChange,
                     impazzendoParticleMainModule.startSize.constantMax - blowSizeChange);
+                bubbleSprite.transform.localScale = transform.localScale;
             }
         }
     }
@@ -279,11 +284,12 @@ public class player : MonoBehaviour
             OnWinCondition();
         }
 
-        if (other.gameObject.CompareTag("Start"))
+        if (gm.hasGameEnded && other.gameObject.CompareTag("Start"))
         {
             gm.StartNewGame();
             rb2d.velocity = Vector2.zero;
             rb2d.angularVelocity = 0.0f;
+            face.sprite = idle;
         }
     }
 
