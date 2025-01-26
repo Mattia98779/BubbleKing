@@ -9,10 +9,13 @@ public class GameManager : MonoBehaviour
     public GameObject ui;
 
     public TextMeshProUGUI timer;
+    
+    public EndingScene endingScene;
 
     private float time = 0;
-    bool hasGameStarted = false;
-    bool hasGameEnded = false;
+    public bool hasGameStarted = false;
+    public bool hasGameEnded = false;
+    public bool isEndingAnimationPlaying = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +40,24 @@ public class GameManager : MonoBehaviour
     public void PlayerWin()
     {
         hasGameEnded = true;
+        endingScene.StartEndingAnimation();
         Debug.Log("Player Win");
         
+    }
+
+    public void StartNewGame()
+    {
+        hasGameStarted = false;
+        hasGameEnded = false;
+        isEndingAnimationPlaying = false;
+        time = 0;
+        ui.SetActive(true);
+        timer.text = string.Format("{0:00}:{1:00}:{2:000}", 0,0,0);
+
+    }
+
+    public void EndingAnimationEnded()
+    {
+        isEndingAnimationPlaying = true;
     }
 }
