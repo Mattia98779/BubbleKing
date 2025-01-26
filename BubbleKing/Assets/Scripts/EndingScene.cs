@@ -23,13 +23,15 @@ public class EndingScene : MonoBehaviour
 
     public float imageVelocity;
     public GameManager gameManager;
+
+    public int levelnumber;
     // Start is called before the first frame update
     void Start()
     {
         
         heightWs = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height, 1.0f)).y * 2;
         widthWs = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0.0f, 1.0f)).x * 2;
-        transform.Translate(Vector2.up * heightWs);
+        transform.Translate(Vector2.up * heightWs * (levelnumber-1));
         image1.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
         image2.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
         image3.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
