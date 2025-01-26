@@ -1963,7 +1963,7 @@ MonoBehaviour:
   dropBlowForce: 20
   minSize: 1
   endingDropVelocity: 10
-  endingAngularVelocity: 5
+  endingAngularVelocity: 360
   currentMousePos: {x: 0, y: 0, z: 0}
   rb2d: {fileID: 1209629975}
   col2d: {fileID: 1209629974}
