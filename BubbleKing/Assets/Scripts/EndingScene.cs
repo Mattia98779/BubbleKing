@@ -29,8 +29,8 @@ public class EndingScene : MonoBehaviour
     void Start()
     {
         
-        heightWs = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height, 1.0f)).y * 2;
-        widthWs = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0.0f, 1.0f)).x * 2;
+        heightWs = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height, -10.0f)).y * 2;
+        widthWs = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0.0f, -10.0f)).x * 2;
         transform.Translate(Vector2.up * heightWs * (levelnumber-1));
         image1.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
         image2.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
@@ -80,12 +80,12 @@ public class EndingScene : MonoBehaviour
 
             if (timer > imageTransitionTime * 5)
             {
-                image1.SetActive(false);
-                image2.SetActive(false);
-                image3.SetActive(false);
-                image4.SetActive(false);
                 isEndingAnimationPlaying = false;
                 gameManager.EndingAnimationEnded();
+                image1.transform.position = startPositionImage1;
+                image2.transform.position = startPositionImage2;
+                image3.transform.position = startPositionImage3;
+                image4.transform.position = startPositionImage4;
             }
             
         }

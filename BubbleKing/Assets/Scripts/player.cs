@@ -226,12 +226,26 @@ public class player : MonoBehaviour
         {
             rb2d.velocity = new Vector2(0, -endingDropVelocity);
             rb2d.angularVelocity = endingAngularVelocity;
+            if (transform.localScale.x > minSize)
+            {
+                transform.localScale -= new Vector3(blowSizeChange, blowSizeChange, blowSizeChange);
+
+                blowParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                    blowParticleMainModule.startSize.constantMin - blowSizeChange,
+                    blowParticleMainModule.startSize.constantMax - blowSizeChange);
+                suckParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                    suckParticleMainModule.startSize.constantMin - blowSizeChange,
+                    suckParticleMainModule.startSize.constantMax - blowSizeChange);
+                impazzendoParticleMainModule.startSize = new ParticleSystem.MinMaxCurve(
+                    impazzendoParticleMainModule.startSize.constantMin - blowSizeChange,
+                    impazzendoParticleMainModule.startSize.constantMax - blowSizeChange);
+            }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (!isImpazzendo)
+        if (!isImpazzendo && !other.gameObject.CompareTag("Water"))
         {
             Debug.Log("CollisionEnter");
             face.sprite = impazzito;
@@ -261,6 +275,7 @@ public class player : MonoBehaviour
             face.sprite = idle;
             suckParticle.Stop();
             blowParticle.Stop();
+            bubbleSprite.transform.localScale = transform.localScale;
             OnWinCondition();
         }
 
