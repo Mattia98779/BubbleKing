@@ -226,6 +226,7 @@ public class player : MonoBehaviour
         }
         else if (gm.isEndingAnimationPlaying)
         {
+            gameObject.layer = LayerMask.NameToLayer("ImpazzitoPlayer");
             face.sprite = impazzito;
             crownSprite.enabled = true;
             rb2d.velocity = new Vector2(0, -endingDropVelocity);
@@ -286,6 +287,7 @@ public class player : MonoBehaviour
 
         if (gm.hasGameEnded && other.gameObject.CompareTag("Start"))
         {
+            gameObject.layer = LayerMask.NameToLayer("Player");
             gm.StartNewGame();
             rb2d.velocity = Vector2.zero;
             rb2d.angularVelocity = 0.0f;
