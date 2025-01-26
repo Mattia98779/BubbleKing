@@ -258,6 +258,9 @@ public class player : MonoBehaviour
         if (other.gameObject.CompareTag("Finish"))
         {
             rb2d.velocity = Vector2.zero;
+            face.sprite = idle;
+            suckParticle.Stop();
+            blowParticle.Stop();
             OnWinCondition();
         }
 
