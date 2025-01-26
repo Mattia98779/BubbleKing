@@ -58,6 +58,15 @@ public class player : MonoBehaviour
 
     public GameObject startingPoint;
     
+    public AudioSource audioSource;
+    public AudioClip impazzitoAudioClip;
+    public AudioClip blowAudioClip;
+    public AudioClip suckAudioClip;
+
+    private bool isStoppingAudioClip = false;
+    public float audioSlowRate = 0.5f;
+    public float minAudioVolume = 0.3f;
+    
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -79,6 +88,19 @@ public class player : MonoBehaviour
         }else if(isImpazzendo && !gm.hasGameEnded)
         {
             HandleImpazzito();
+        }
+
+        if (isStoppingAudioClip)
+        {
+            audioSource.volume -= audioSlowRate * Time.deltaTime;
+            if (audioSource.volume < minAudioVolume)
+            {
+                audioSource.Stop();
+                isStoppingAudioClip = false;
+                audioSource.volume = 1;
+            }
+
+            
         }
         
     }
@@ -124,9 +146,21 @@ public class player : MonoBehaviour
             {
                 suckParticle.Play();
             }
+
+            if (!(audioSource.clip==suckAudioClip && audioSource.isPlaying))
+            {
+                audioSource.clip = suckAudioClip;
+                audioSource.Play();
+                isStoppingAudioClip = false;
+                audioSource.volume = 1;
+            }
         }else {
             isLeftMouseDown = false;
             suckParticle.Stop();
+            if ((audioSource.clip == suckAudioClip && audioSource.isPlaying))
+            {
+                isStoppingAudioClip = true;
+            }
         }
 
         if (Input.GetMouseButton(1) && transform.localScale.x > minSize)
@@ -139,9 +173,20 @@ public class player : MonoBehaviour
             {
                 blowParticle.Play();
             }
+            if (!(audioSource.clip==blowAudioClip && audioSource.isPlaying))
+            {
+                audioSource.clip = blowAudioClip;
+                audioSource.Play();
+                isStoppingAudioClip = false;
+                audioSource.volume = 1;
+            }
         }else {
             isRightMouseDown = false;
             blowParticle.Stop();
+            if ((audioSource.clip == blowAudioClip && audioSource.isPlaying))
+            {
+                isStoppingAudioClip = true;
+            }
         }
 
         if (!(Input.GetMouseButton(0) || (Input.GetMouseButton(1) && transform.localScale.x > minSize)))
@@ -254,6 +299,7 @@ public class player : MonoBehaviour
         if (!isImpazzendo && !other.gameObject.CompareTag("Water"))
         {
             Debug.Log("CollisionEnter");
+            audioSource.PlayOneShot(impazzitoAudioClip);
             face.sprite = impazzito;
             canPlayerMove = false;
             isImpazzendo = true;

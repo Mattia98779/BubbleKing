@@ -7,6 +7,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject ui;
+    public GameObject timerUi;
 
     public TextMeshProUGUI timer;
     
@@ -41,12 +42,14 @@ public class GameManager : MonoBehaviour
     {
         hasGameEnded = true;
         endingScene.StartEndingAnimation();
+        timerUi.SetActive(false);
         Debug.Log("Player Win");
         
     }
 
     public void StartNewGame()
     {
+        timerUi.SetActive(true);
         hasGameStarted = false;
         hasGameEnded = false;
         isEndingAnimationPlaying = false;

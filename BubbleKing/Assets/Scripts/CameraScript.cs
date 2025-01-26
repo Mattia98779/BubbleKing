@@ -14,17 +14,36 @@ public class CameraScript : MonoBehaviour
     private float shakeDuration = 0.0f;
     private float shakeMagnitude = 0.1f;
     private float shakeTime = 0.0f;
+
+    public AudioSource audioSource;
+    public AudioClip crownClip;
+    private int currentCameraPosition = 1;
+    public int levelNumber = 5;
     
     // Start is called before the first frame update
     void Start()
     {
+        audioSource.volume = 0f;
         transitionDistance = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height, 0.0f)).y;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isShaking)
+
+        if (levelNumber - currentCameraPosition == 0)
+        {
+            audioSource.volume = 1f;
+        }
+        else if (levelNumber - currentCameraPosition == 1)
+        {
+            audioSource.volume = 0.5f;
+        }
+        else
+        {
+            audioSource.volume = 0f;
+        }
+    if (isShaking)
         {
             if (shakeTime > shakeDuration)
             {
@@ -47,10 +66,12 @@ public class CameraScript : MonoBehaviour
             if (screenPlayerPosition.y > Screen.height)
             {
                 transform.Translate(transitionDistance * 2 * Vector2.up);
+                currentCameraPosition++;
             }
             else if (screenPlayerPosition.y < 0.0f)
             {
                 transform.Translate(transitionDistance * 2 * Vector2.down);
+                currentCameraPosition--;
             }
         }
     }
