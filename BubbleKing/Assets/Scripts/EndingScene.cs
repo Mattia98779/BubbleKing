@@ -32,10 +32,21 @@ public class EndingScene : MonoBehaviour
         heightWs = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height, -10.0f)).y * 2;
         widthWs = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0.0f, -10.0f)).x * 2;
         transform.Translate(Vector2.up * heightWs * (levelnumber-1));
-        image1.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
-        image2.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
-        image3.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
-        image4.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
+        //image1.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
+        //image2.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
+        //image3.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
+        //image4.transform.localScale = new Vector3(widthWs, heightWs, 1.0f);
+        SpriteRenderer spriteRenderer = image1.GetComponent<SpriteRenderer>();
+        float spriteWidth = spriteRenderer.bounds.size.x;
+        float spriteHeight = spriteRenderer.bounds.size.y ;
+        
+        float widthScale = widthWs / spriteWidth;
+        float heightScale = heightWs / spriteHeight;
+        image1.transform.localScale = new Vector3(widthScale, heightScale, 1.0f);
+        image2.transform.localScale = new Vector3(widthScale, heightScale, 1.0f);
+        image3.transform.localScale = new Vector3(widthScale, heightScale, 1.0f);
+        image4.transform.localScale = new Vector3(widthScale, heightScale, 1.0f);
+        
         image2.transform.Translate(Vector2.up * heightWs);
         image1.transform.Translate(Vector2.left * widthWs);
         image3.transform.Translate(Vector2.right * widthWs );
@@ -45,6 +56,8 @@ public class EndingScene : MonoBehaviour
         startPositionImage2 = image2.transform.position;
         startPositionImage3 = image3.transform.position;
         startPositionImage4 = image4.transform.position;
+        
+        
     }
 
     // Update is called once per frame
